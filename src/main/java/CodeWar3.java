@@ -1,3 +1,4 @@
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -23,18 +24,30 @@ public class CodeWar3 {
         String[] stArr1 = bin2.split("(?=.{8}\\G)");
         System.out.println(Arrays.toString(stArr));
         System.out.println(Arrays.toString(stArr1));
-        /*System.out.println();
-//        2149583361
-        System.out.println(Long.toString(2149583361L, 2));
-        System.out.println(Integer.parseInt("10000000", 2));
-        System.out.println(Integer.parseInt("0", 2));
-        double dol = 1f / 6f;
-        System.out.println(Math.ceil(dol));
-        System.out.println(dol);*/
 
-        /*long dec = (long) Math.pow(2,0)+(long) Math.pow(2,9)+(long) Math.pow(2,11)+(long) Math.pow(2,21)+(long) Math.pow(2,31);
-        System.out.println(Math.pow(2,0));
-        System.out.println(dec);*/
+        System.out.println(factors(86240));
+        System.out.println(factors(77433082));
+
+        System.out.println(getPeaks(new int[]{3, 2, 3, 6, 4, 1, 2, 3, 2, 1, 2, 2, 2, 1}));
+        System.out.println(getPeaks(new int[5]));
+
+        int[][]array = new int[5][5];
+        Random r = new Random();
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+//                array[i][j]=i+j+2;
+                array[i][j]=r.nextInt(100);
+            }
+        }
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                System.out.print(array[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+        System.out.println(determinant(array));
+
 
     }
 
@@ -158,7 +171,186 @@ pigIt('Hello world !');     // elloHay orldway !*/
                         .reverse().toString(), 2));
             }
         }
-                return String.join(".", binStrArray); // do it!
+        return String.join(".", binStrArray); // do it!
     }
+
+    /*Для положительного числа n > 1 найдите разложение n на простые множители. Результатом будет строка следующего вида:
+
+  "(p1**n1)(p2**n2)...(pk**nk)"
+с p (i) в порядке возрастания и n (i) пустым, если n (i) равно 1.
+
+Пример: n = 86240 должно возвращать "(2**5)(5)(7**2)(11)"*/
+
+    /* public static String factors(int lst) {
+        String result = "";
+        for (int fac = 2; fac <= lst; ++fac) {
+            int count;
+            for (count = 0; lst % fac == 0; ++count) {
+                lst /= fac;
+            }
+            if (count > 0) {
+                result += "(" + fac + (count > 1 ? "**" + count : "") + ")";
+            }
+        }
+        return result;
+    }*/
+
+    public static String factors(int n) {
+        if (n <= 1) {
+            return "";
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+
+        int tmp = n;
+        int count = 0;
+        while (tmp % 2 == 0) {
+            count++;
+            tmp = tmp / 2;
+        }
+        writeSb(stringBuilder, 2, count);
+        for (int i = 3; i <= n; i = i + 2) {
+            count = 0;
+            while (tmp % i == 0) {
+//                System.out.println(i);
+                count++;
+                tmp = tmp / i;
+            }
+            writeSb(stringBuilder, i, count);
+        }
+        return stringBuilder.toString();
+    }
+
+    private static void writeSb(StringBuilder stringBuilder, int i, int count) {
+        if (count != 0) {
+            if (count == 1) {
+                stringBuilder.append("(").append(i).append(")");
+            } else {
+                stringBuilder.append("(").append(i).append("**").append(count).append(")");
+            }
+        }
+    }
+
+    /*В этом ката вы напишете функцию, которая возвращает позиции и значения «пиков»
+    (или локальных максимумов) числового массива.
+Например, массив arr = [0, 1, 2, 5, 1, 0] имеет пик в позиции 3 со значением 5
+(поскольку arr[3] равно 5).
+Вывод будет возвращен как ``Map<String,List> с двумя парами ключ-значение: "pos" и "peaks".
+Если в заданном массиве нет пика, просто верните {"pos" => [], "peaks" => []}`.
+Пример: pickPeaks([3, 2, 3, 6, 4, 1, 2, 3, 2, 1, 2, 3]) должен возвращать {pos: [3, 7],
+Peaks: [6, 3]} ( или эквивалент на других языках)
+Все входные массивы будут действительными целочисленными массивами (хотя они могут быть пустыми),
+поэтому вам не нужно будет проверять ввод.
+Первый и последний элементы массива не будут считаться пиками (в контексте математической функции мы
+не знаем, что находится после, а что до, и, следовательно, мы не знаем, пик это или нет).
+Также остерегайтесь плато!!! [1, 2, 2, 2, 1] имеет пик, а [1, 2, 2, 2, 3] и [1, 2, 2, 2, 2] — нет.
+В случае плато-пика, пожалуйста, верните только положение и значение начала плато.
+Например: pickPeaks([1, 2, 2, 2, 1]) возвращает {pos: [1],peaks: [2]} (или эквивалент на других языках).
+put("pos",   put("pos",   Arrays.stream(p1).boxed().collect(Collectors.toList()));
+             put("peaks", Arrays.stream(p2).boxed().collect(Collectors.toList()));
+*/
+
+    /*public static Map<String,List<Integer>> getPeaks(int[] arr) {
+
+        Map<String, List<Integer>> result = new HashMap<>();
+        result.put("pos", new ArrayList<>());
+        result.put("peaks", new ArrayList<>());
+
+        int peakPos = 0; // the position of the peak
+        boolean increasing = false; // test to see if the numbers keep increasing
+
+        for (int x = 1 ; x < arr.length ; x++) {
+            if (arr[x-1] < arr[x]) { // if the numbers are still increasing
+                increasing = true;
+                peakPos = x;
+            }
+            if (increasing && arr[x-1] > arr[x]) { // if it has been increasing but is not anymore
+                increasing = false;
+                result.get("pos").add(peakPos);
+                result.get("peaks").add(arr[peakPos]);
+            }
+        }
+        return result;
+    }*/
+
+    public static Map<String, List<Integer>> getPeaks(int[] arr) {
+        Map<String, List<Integer>> result = new HashMap<>();
+        List<Integer> posList = new ArrayList<>();
+        List<Integer> peaksList = new ArrayList<>();
+        int pos = -1;
+        for (int i = 1; i < arr.length; i++) {
+            if (i < arr.length - 1 && arr[i] > arr[i - 1] && arr[i] >= arr[i + 1]) {
+                pos = i;
+            }
+            if (arr[i] < arr[i - 1] && pos > 0) {
+                posList.add(pos);
+                peaksList.add(arr[pos]);
+                pos = -1;
+            }
+        }
+        result.put("pos", posList);
+        result.put("peaks", peaksList);
+        return result;
+    }
+
+    /*Напишите функцию, которая принимает квадратную матрицу (массив N x N 2D) и возвращает
+    определитель матрицы.*/
+
+    /* public static int determinant(int[][] m) {
+        int d = 0, size = m.length;
+        if (size == 1) return m[0][0];
+
+        for (int n = 0 ; n < size ; n++) {
+            int[][] newM = new int[size-1][size-1];
+            for (int x = 1 ; x < size ; x++) for (int y = 0 ; y < size ; y++) {
+                if (y == n) continue;
+                newM[x-1][y + (y>n ? -1 : 0)] = m[x][y];
+            }
+            d += (n%2!=0 ? -1 : 1) * m[0][n] * determinant(newM);
+        }
+        return d
+        */
+
+    /*
+    public class Matrix{
+  public static int determinant(int[][] m){
+    if(m.length == 1) return m[0][0];
+    int d = 0, k, l;
+    for(int j = 0; j < m.length; j++){
+      int[][] n = new int[m.length-1][m.length-1];
+      for(k = 0; k < m.length; k++) for(l = 0; l < m.length; l++)
+        if(k != 0 && l != j) n[k-((k>0)?1:0)][l-((l>j)?1:0)] = m[k][l];
+      d += ((j % 2 == 0)?1:-1) * m[0][j] * determinant(n);
+    }
+    return d;
+  }
+}*/
+
+    public static int determinant(int[][] matrix) {
+
+        int n = matrix.length;
+        if(n == 1) return matrix[0][0];
+        int ans = 0;
+       int B[][] = new int[n-1][n-1];
+        int l = 1;
+        for(int i = 0; i < n; ++i){
+            int x = 0, y = 0;
+            for(int j = 1; j < n; ++j){
+                for(int k = 0; k < n; ++k){
+                    if(i == k) continue;
+                    B[x][y] = matrix[j][k];
+                    ++y;
+                    if(y == n - 1){
+                        y = 0;
+                        ++x;
+                    }
+                }
+            }
+            ans += l * matrix[0][i] * determinant(B);
+            l *= (-1);
+        }
+        return ans;
+    }
+
+
 
 }
