@@ -31,12 +31,12 @@ public class CodeWar3 {
         System.out.println(getPeaks(new int[]{3, 2, 3, 6, 4, 1, 2, 3, 2, 1, 2, 2, 2, 1}));
         System.out.println(getPeaks(new int[5]));
 
-        int[][]array = new int[5][5];
+        int[][] array = new int[5][5];
         Random r = new Random();
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
 //                array[i][j]=i+j+2;
-                array[i][j]=r.nextInt(100);
+                array[i][j] = r.nextInt(100);
             }
         }
         for (int i = 0; i < 5; i++) {
@@ -47,6 +47,17 @@ public class CodeWar3 {
         }
 
         System.out.println(determinant(array));
+
+        System.out.println(isInteresting(1111, new int[]{1000, 3000}));
+        System.out.println(isInteresting(6111, new int[]{1000, 3000}));
+        System.out.println(isInteresting(11208, new int[]{1337, 256}));
+        System.out.println(isInteresting(123321, new int[]{1000, 10000000}));
+        System.out.println(isInteresting(12321, new int[]{1000, 10000000}));
+        System.out.println(isInteresting(567890, new int[]{1000, 10000000}));
+        System.out.println(isInteresting(6543210, new int[]{1000, 10000000}));
+        System.out.println(isInteresting(11209, new int[]{1337, 256}));
+        System.out.println(isInteresting(11211, new int[]{1337, 256}));
+        System.out.println(isInteresting(1337, new int[]{1337, 256}));
 
 
     }
@@ -328,18 +339,18 @@ put("pos",   put("pos",   Arrays.stream(p1).boxed().collect(Collectors.toList())
     public static int determinant(int[][] matrix) {
 
         int n = matrix.length;
-        if(n == 1) return matrix[0][0];
+        if (n == 1) return matrix[0][0];
         int ans = 0;
-       int B[][] = new int[n-1][n-1];
+        int B[][] = new int[n - 1][n - 1];
         int l = 1;
-        for(int i = 0; i < n; ++i){
+        for (int i = 0; i < n; ++i) {
             int x = 0, y = 0;
-            for(int j = 1; j < n; ++j){
-                for(int k = 0; k < n; ++k){
-                    if(i == k) continue;
+            for (int j = 1; j < n; ++j) {
+                for (int k = 0; k < n; ++k) {
+                    if (i == k) continue;
                     B[x][y] = matrix[j][k];
                     ++y;
-                    if(y == n - 1){
+                    if (y == n - 1) {
                         y = 0;
                         ++x;
                     }
@@ -351,6 +362,212 @@ put("pos",   put("pos",   Arrays.stream(p1).boxed().collect(Collectors.toList())
         return ans;
     }
 
+    public static int isInteresting(int number, int[] awesomePhrases) {
+
+        boolean isPoly = true;
+        HashSet<Integer> set = new HashSet<>();
+        for (int i:awesomePhrases) {
+            set.add(i);
+        }
+
+        if(set.contains(number)){
+            return 2;
+        }
+
+        if (number < 100 || number > 1000000000) {
+            return 0;
+        }
+        if (awesomePhrases.length != 2 || awesomePhrases[0] == 0 || awesomePhrases[1] == 0) {
+            return 0;
+        }
+
+        int min = Math.min(awesomePhrases[0], awesomePhrases[1]);
+        int max = Math.max(awesomePhrases[0], awesomePhrases[1]);
+
+        /*if(number < min || number > max){
+            return 0;
+        }*/
+
+        List<Integer> numbers = getIntegers(number);
+        Integer x = getInteger(numbers, awesomePhrases);
+        if (x != null) {
+            return (int) x;
+        }
+
+
+        for (int i = 0; i < numbers.size() / 2; i++) {
+            if (numbers.get(i) != numbers.get(numbers.size() - 1 - i)) {
+                isPoly = false;
+                break;
+            }
+        }
+        if (isPoly) {
+            return 2;
+        }
+
+        for (int i = number + 1; i < number + 3; i++) {
+            String st = Integer.toString(i);
+            isPoly = true;
+            for (int j = 0; j < st.length() / 2; j++) {
+                if (st.charAt(j) != st.charAt(st.length() - j - 1)) {
+                    isPoly = false;
+                    break;
+                }
+            }
+            if (isPoly) {
+//                System.out.println(isPoly);
+                return 1;
+            }
+        }
+
+
+        for (int j = number + 1; j < number + 3; j++) {
+            numbers = getIntegers(j);
+            x = getInteger(numbers, awesomePhrases);
+            if (x != null && x == 2) {
+                return 1;
+            }
+
+
+        }
+        return 0;
+    }
+
+    private static Integer getInteger(List<Integer> numbers, int[] awesomePhrases) {
+        boolean isDec = true;
+        boolean isIncrement = true;
+        boolean isDecrement = true;
+        boolean isCon = true;
+//        System.out.println(number);
+        for (int i = 1; i < numbers.size(); i++) {
+//            System.out.println(numbers.get(i) + 1 + " / " + numbers.get(i - 1));
+            if (numbers.get(i) != 0) {
+                isDec = false;
+            }
+            if ((10 + (numbers.get(i) - 10) % 10) != 11 + (numbers.get(i - 1) - 10) % 10) {
+                isIncrement = false;
+            }
+            if (!Objects.equals(numbers.get(i) + 1, numbers.get(i - 1))) {
+                isDecrement = false;
+            }
+        }
+        if (isDec || isDecrement || isIncrement) {
+//            System.out.println("isDec = " + isDec + " / isIncrement = " + isIncrement + " / isDecrement = " + isDecrement);
+            return 2;
+        }
+        return null;
+    }
+
+    private static List<Integer> getIntegers(int number) {
+        List<Integer> numbers = new ArrayList<>();
+        int tmp = number;
+        while (tmp > 0) {
+            numbers.add(0, tmp % 10);
+            tmp = tmp / 10;
+        }
+        return numbers;
+    }
+
+
+   /* public static int isInteresting(int number, int[] awesomePhrases) {
+        boolean isDec = true;
+        boolean isIncrement = true;
+        boolean isDecrement = true;
+        boolean isPoly = true;
+        if (number < 100 || number > 1000000000) {
+            return 0;
+        }
+        if (awesomePhrases.length != 2 || awesomePhrases[0] == 0 || awesomePhrases[1] == 0) {
+            return 0;
+        }
+
+        int min = Math.min(awesomePhrases[0], awesomePhrases[1]);
+        int max = Math.max(awesomePhrases[0], awesomePhrases[1]);
+
+        *//*if(number < min || number > max){
+            return 0;
+        }*//*
+
+        List<Integer> numbers = new ArrayList<>();
+        int tmp = number;
+        while (tmp > 0) {
+            numbers.add(0, tmp % 10);
+            tmp = tmp / 10;
+        }
+//        System.out.println(number);
+        for (int i = 1; i < numbers.size(); i++) {
+//            System.out.println(numbers.get(i) + 1 + " / " + numbers.get(i - 1));
+            if (numbers.get(i) != 0) {
+                isDec = false;
+            }
+            if ((10 + (numbers.get(i) - 10) % 10) != 11 + (numbers.get(i - 1) - 10) % 10) {
+                isIncrement = false;
+            }
+            if (!Objects.equals(numbers.get(i) + 1, numbers.get(i - 1))) {
+                isDecrement = false;
+            }
+        }
+        if (isDec || isDecrement || isIncrement) {
+//            System.out.println("isDec = " + isDec + " / isIncrement = " + isIncrement + " / isDecrement = " + isDecrement);
+            return 2;
+        }
+
+        for (int i = 0; i < numbers.size() / 2; i++) {
+            if (numbers.get(i) != numbers.get(numbers.size() - 1 - i)) {
+                isPoly = false;
+                break;
+            }
+        }
+        if (isPoly) {
+            return 2;
+        }
+
+        for (int i = number + 1; i < number + 3; i++) {
+            String st = Integer.toString(i);
+            isPoly = true;
+            for (int j = 0; j < st.length() / 2; j++) {
+                if (st.charAt(j) != st.charAt(st.length() - j - 1)) {
+                    isPoly = false;
+                    break;
+                }
+            }
+            if (isPoly) {
+//                System.out.println(isPoly);
+                return 1;
+            }
+        }
+
+
+        for (int j = number + 1; j < number + 3; j++) {
+            isDec = true;
+            isIncrement = true;
+            isDecrement = true;
+            numbers = new ArrayList<>();
+            tmp = j;
+            while (tmp > 0) {
+                numbers.add(0, tmp % 10);
+                tmp = tmp / 10;
+            }
+            for (int i = 1; i < numbers.size(); i++) {
+//            System.out.println(numbers.get(i) + 1 + " / " + numbers.get(i - 1));
+                if (numbers.get(i) != 0) {
+                    isDec = false;
+                }
+                if ((10 + (numbers.get(i) - 10) % 10) != 11 + (numbers.get(i - 1) - 10) % 10) {
+                    isIncrement = false;
+                }
+                if (!Objects.equals(numbers.get(i) + 1, numbers.get(i - 1))) {
+                    isDecrement = false;
+                }
+            }
+            if (isDec || isDecrement || isIncrement) {
+//            System.out.println("isDec = " + isDec + " / isIncrement = " + isIncrement + " / isDecrement = " + isDecrement);
+                return 1;
+            }
+
+        }
+        return 0;
+    }*/
 
 
 }
