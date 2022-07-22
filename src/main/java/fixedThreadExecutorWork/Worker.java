@@ -8,11 +8,16 @@ public class Worker implements Runnable {
     static int count;
     String name;
     Cell[][] arrayCell;
-    ExecutorService executorService = Executors.newFixedThreadPool(4);
 
-    public Worker(Cell[][] arrayCell) {
+    PlayingFieldNoSingleton playingField;
+
+    /*PlayingField playingField;*/
+    ExecutorService executorService = Executors.newFixedThreadPool(6);
+
+    public Worker(Cell[][] arrayCell,PlayingFieldNoSingleton pf) {
         this.arrayCell = arrayCell;
         this.name = "Worker-" + count;
+        this.playingField = pf;
     }
 
     @Override
@@ -20,17 +25,12 @@ public class Worker implements Runnable {
         System.out.println("Start-" + Thread.currentThread().getName());
         for (int i = 0; i < arrayCell.length; i++) {
             for (int j = 0; j < arrayCell[0].length; j++) {
-                System.out.println(arrayCell[i][j]);
-                executorService.execute(new InnerWorker(arrayCell[i][j]));
+//                System.out.println(arrayCell[i][j]);
+                executorService.execute(new InnerWorker(arrayCell[i][j], playingField));
             }
         }
 //        stop();
         executorService.shutdown();
-        /*for (Cell[] cells : arrayCell) {
-            for (int j = 0; j < arrayCell[0].length; j++) {
-                System.out.println(cells[j]);
-            }
-        }*/
         System.out.println("Stop-" + Thread.currentThread().getName());
     }
 

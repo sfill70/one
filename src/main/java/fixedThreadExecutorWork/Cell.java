@@ -11,8 +11,8 @@ public class Cell {
 
 /*Они все работают по разному */
 //    Set<String> setString = new ConcurrentSkipListSet<>();
-
     Set<String>setString = ConcurrentHashMap.newKeySet();
+    /*Pаботаeт по другому */
 //    CopyOnWriteArraySet <String>setString = new CopyOnWriteArraySet();
 
     public Cell(int x, int y) {
@@ -58,6 +58,7 @@ public class Cell {
         return "Cell{" +
                 "x=" + x +
                 ", y=" + y +
+                /*", setString=" + setString.size() +*/
                 ", setString=" + setString +
                 '}';
     }

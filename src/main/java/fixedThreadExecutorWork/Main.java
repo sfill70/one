@@ -10,33 +10,48 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        PlayingField playingField = PlayingField.getInstance();
-        playingField.initialization();
-        /*playingField.getArrayCell()[0][1].setY(2);
-        System.out.println(playingField.getArrayCell()[0][1]);*/
-        ExecutorService executorService = Executors.newFixedThreadPool(3);
-        List<Worker> workerList = new ArrayList<>();
-        for (int i = 0; i < 9; i = i + 3) {
-            Cell[][] arrayCellTmp = new Cell[3][playingField.getArrayCell().length];
-            for (int j = 0; j < 3; j++) {
-                arrayCellTmp[j] = Arrays.copyOf(playingField.getArrayCell()[i + j], playingField.getArrayCell().length);
+        /*PlayingField playingField = PlayingField.getInstance();
+        playingField.initialization();*/
+
+        for (int k = 0; k <1000; k++) {
+            PlayingFieldNoSingleton playingField = new PlayingFieldNoSingleton();
+            ExecutorService executorService = Executors.newFixedThreadPool(3);
+            List<Worker> workerList = new ArrayList<>();
+            for (int i = 0; i < 9; i = i + 3) {
+                Cell[][] arrayCellTmp = new Cell[3][playingField.getArrayCell().length];
+                for (int j = 0; j < 3; j++) {
+                    arrayCellTmp[j] = Arrays.copyOf(playingField.getArrayCell()[i + j], playingField.getArrayCell().length);
+                }
+                Worker worker = new Worker(arrayCellTmp, playingField);
+                executorService.execute(worker);
+                workerList.add(worker);
             }
-            Worker worker = new Worker(arrayCellTmp);
-            executorService.execute(worker);
-            workerList.add(worker);
-        }
-        List<Runnable> list = executorService.shutdownNow();
-        Thread.sleep(200);
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//        System.out.println(Arrays.deepToString(playingField.getArrayCell()));
-        for (int i = 6; i < playingField.getArrayCell().length; i++) {
-            for (int j = 0; j < playingField.getArrayCell()[0].length; j++) {
-                System.out.print(playingField.getArrayCell()[i][j] + " /*/ ");
+            List<Runnable> list = executorService.shutdownNow();
+            Thread.sleep(200);
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+//            System.out.println(Arrays.deepToString(playingField.getArrayCell()));
+            for (int i = 0; i < playingField.getArrayCell().length; i++) {
+                for (int j = 0; j < playingField.getArrayCell()[0].length; j++) {
+                    System.out.print(playingField.getArrayCell()[i][j] + " /*/ ");
+                }
+                System.out.println();
             }
-            System.out.println();
+
+            System.out.println(executorService.isTerminated());
+            System.out.println(executorService.isShutdown());
+            System.out.println(workerList);
+
+            //Это не нужно,останавливается без этого
+            if (executorService.isShutdown() && executorService.isTerminated()) {
+                for (Worker worker : workerList
+                ) {
+                    worker.stop();
+                    System.out.println("Stop");
+                    System.out.println(list);
+                }
+            }
         }
-        System.out.println(executorService.isTerminated());
-        System.out.println(executorService.isShutdown());
 
 
 
