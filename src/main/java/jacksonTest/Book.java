@@ -70,6 +70,8 @@ class Book {
 
             //Десериализация Xlm
             Book bookXml =  mapperXlm.readValue(xmlBook, Book.class);
+            System.out.println(bookXml.author);
+            System.out.println(bookXml.title + "!!!!!!!!!!!!!!!!!!");
             System.out.println(bookXml);
 
             //Сериализация YAML

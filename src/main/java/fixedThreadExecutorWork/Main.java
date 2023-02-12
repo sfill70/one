@@ -13,7 +13,7 @@ public class Main {
         /*PlayingField playingField = PlayingField.getInstance();
         playingField.initialization();*/
 
-        for (int k = 0; k <1000; k++) {
+        for (int k = 0; k <1; k++) {
             PlayingFieldNoSingleton playingField = new PlayingFieldNoSingleton();
             ExecutorService executorService = Executors.newFixedThreadPool(3);
             List<Worker> workerList = new ArrayList<>();
@@ -42,7 +42,7 @@ public class Main {
             System.out.println(executorService.isShutdown());
             System.out.println(workerList);
 
-            //Это не нужно,останавливается без этого
+            //Это не нужно,останавливается или не останавливается без этого
             if (executorService.isShutdown() && executorService.isTerminated()) {
                 for (Worker worker : workerList
                 ) {
